@@ -270,6 +270,145 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/04/redis-lua-script/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wuyachao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wuyachao's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/05/04/redis-lua-script/" itemprop="url">
+                  redis-lua-script
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-04T20:07:39+08:00">
+                2017-05-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>redis的lua脚本拓展，返回nil及其判断</p>
+<h3 id="OpenResty的lua-resty-redis返回为空的判断"><a href="#OpenResty的lua-resty-redis返回为空的判断" class="headerlink" title="OpenResty的lua_resty_redis返回为空的判断"></a>OpenResty的lua_resty_redis返回为空的判断</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">local res, err = red:get(&quot;dog&quot;)</div><div class="line">if not res then</div><div class="line">    ngx.say(&quot;failed to get dog: &quot;, err)</div><div class="line">    return</div><div class="line">end</div><div class="line">if res == ngx.null then</div><div class="line">    ngx.say(&apos;res is null&apos;)</div><div class="line">else</div><div class="line">    ngx.say(&apos;res is not empty&apos;)</div><div class="line">end</div><div class="line">ngx.say(type(res))</div><div class="line">ngx.say(res)</div></pre></td></tr></table></figure>
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">res is null</div><div class="line">userdata</div><div class="line">null</div></pre></td></tr></table></figure>
+<ul>
+<li>lua_resty_redis的redis操作返回的数据打印出来是null，但是不等同于lua中的nil，也不能直接和null比较，里面是lua的8中数据类型中的userdata。文档中已经有描述了：A non-nil Redis “bulk reply” results in a Lua string as the return value. A nil bulk reply results in a ngx.null return value.  <a href="https://github.com/openresty/lua-resty-redis" target="_blank" rel="external">lua_resty_redis文档</a></li>
+</ul>
+<h3 id="redis自带的lua脚本"><a href="#redis自带的lua脚本" class="headerlink" title="redis自带的lua脚本"></a>redis自带的lua脚本</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; hget team wyc</div><div class="line">&quot;&#123;\&quot;name\&quot;:\&quot;wyycc\&quot;,\&quot;age\&quot;:\&quot;444\&quot;&#125;&quot;</div></pre></td></tr></table></figure>
+<p>想要通过redis官方的lua脚本拓展来传递name,age等直接返回对应的值。如果传递name，age等redis的hash中存在的value，则返回其结果，如果不存在返回nil，使得传入和返回结果一一对应。</p>
+<ul>
+<li>redis的lua拓展自带了cjson等库，可以很方便的处理json数据。</li>
+<li>当返回table中有nil时停止，后续的数据无法返回</li>
+<li>nil在lua的table中相当删除某个key，table.insert()是无法插入到table中的</li>
+<li>想要返回nil，则插入lua的FALSE。Lua boolean false -&gt; Redis Nil bulk reply</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; eval &quot;return &#123;1,2,3.3333,&apos;foo&apos;,nil,&apos;bar&apos;&#125;&quot; 0</div><div class="line">1) (integer) 1</div><div class="line">2) (integer) 2</div><div class="line">3) (integer) 3</div><div class="line">4) &quot;foo&quot;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>后面的0表明传入几个参数，KEYS，ARGV两个table中接受传入的参数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">127.0.0.1:6379&gt; eval &quot;local substring = redis.call(&apos;hget&apos;,KEYS[1],KEYS[2]) if not substring then return false end substring = cjson.decode(substring) local result = &#123;&#125; for _, v in ipairs(ARGV) do table.insert(result,substring[v] or false) end return result&quot; 2 team wyc age len name</div><div class="line">1) &quot;444&quot;</div><div class="line">2) (nil)</div><div class="line">3) &quot;wyycc&quot;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/02/测试/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -580,7 +719,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -588,6 +727,15 @@
 
           
 
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
           
 
         </nav>
