@@ -90,17 +90,17 @@
 
 
 
-<meta name="description" content="redis的lua脚本拓展，返回nil及其判断 OpenResty的lua_resty_redis返回为空的判断123456789101112local res, err = red:get(&amp;quot;dog&amp;quot;)if not res then    ngx.say(&amp;quot;failed to get dog: &amp;quot;, err)    returnendif res == n">
+<meta name="description" content="redis的lua脚本拓展，返回nil及其判断OpenResty的lua_resty_redis返回为空的判断123456789101112local res, err = red:get(&amp;quot;dog&amp;quot;)if not res then    ngx.say(&amp;quot;failed to get dog: &amp;quot;, err)    returnendif res == ng">
 <meta name="keywords" content="lua,redis,openresty">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis-lua-script">
 <meta property="og:url" content="http://yoursite.com/2017/05/04/redis-lua-script/index.html">
 <meta property="og:site_name" content="wuyachao&#39;s blog">
-<meta property="og:description" content="redis的lua脚本拓展，返回nil及其判断 OpenResty的lua_resty_redis返回为空的判断123456789101112local res, err = red:get(&amp;quot;dog&amp;quot;)if not res then    ngx.say(&amp;quot;failed to get dog: &amp;quot;, err)    returnendif res == n">
-<meta property="og:updated_time" content="2017-05-04T12:09:00.000Z">
+<meta property="og:description" content="redis的lua脚本拓展，返回nil及其判断OpenResty的lua_resty_redis返回为空的判断123456789101112local res, err = red:get(&amp;quot;dog&amp;quot;)if not res then    ngx.say(&amp;quot;failed to get dog: &amp;quot;, err)    returnendif res == ng">
+<meta property="og:updated_time" content="2017-05-04T12:12:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis-lua-script">
-<meta name="twitter:description" content="redis的lua脚本拓展，返回nil及其判断 OpenResty的lua_resty_redis返回为空的判断123456789101112local res, err = red:get(&amp;quot;dog&amp;quot;)if not res then    ngx.say(&amp;quot;failed to get dog: &amp;quot;, err)    returnendif res == n">
+<meta name="twitter:description" content="redis的lua脚本拓展，返回nil及其判断OpenResty的lua_resty_redis返回为空的判断123456789101112local res, err = red:get(&amp;quot;dog&amp;quot;)if not res then    ngx.say(&amp;quot;failed to get dog: &amp;quot;, err)    returnendif res == ng">
 
 
 
@@ -344,8 +344,7 @@
       
 
       
-        <p>redis的lua脚本拓展，返回nil及其判断</p>
-<h3 id="OpenResty的lua-resty-redis返回为空的判断"><a href="#OpenResty的lua-resty-redis返回为空的判断" class="headerlink" title="OpenResty的lua_resty_redis返回为空的判断"></a>OpenResty的lua_resty_redis返回为空的判断</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">local res, err = red:get(&quot;dog&quot;)</div><div class="line">if not res then</div><div class="line">    ngx.say(&quot;failed to get dog: &quot;, err)</div><div class="line">    return</div><div class="line">end</div><div class="line">if res == ngx.null then</div><div class="line">    ngx.say(&apos;res is null&apos;)</div><div class="line">else</div><div class="line">    ngx.say(&apos;res is not empty&apos;)</div><div class="line">end</div><div class="line">ngx.say(type(res))</div><div class="line">ngx.say(res)</div></pre></td></tr></table></figure>
+        <h2 id="redis的lua脚本拓展，返回nil及其判断"><a href="#redis的lua脚本拓展，返回nil及其判断" class="headerlink" title="redis的lua脚本拓展，返回nil及其判断"></a>redis的lua脚本拓展，返回nil及其判断</h2><h3 id="OpenResty的lua-resty-redis返回为空的判断"><a href="#OpenResty的lua-resty-redis返回为空的判断" class="headerlink" title="OpenResty的lua_resty_redis返回为空的判断"></a>OpenResty的lua_resty_redis返回为空的判断</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">local res, err = red:get(&quot;dog&quot;)</div><div class="line">if not res then</div><div class="line">    ngx.say(&quot;failed to get dog: &quot;, err)</div><div class="line">    return</div><div class="line">end</div><div class="line">if res == ngx.null then</div><div class="line">    ngx.say(&apos;res is null&apos;)</div><div class="line">else</div><div class="line">    ngx.say(&apos;res is not empty&apos;)</div><div class="line">end</div><div class="line">ngx.say(type(res))</div><div class="line">ngx.say(res)</div></pre></td></tr></table></figure>
 <p>结果：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">res is null</div><div class="line">userdata</div><div class="line">null</div></pre></td></tr></table></figure>
 <ul>
@@ -534,7 +533,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenResty的lua-resty-redis返回为空的判断"><span class="nav-number">1.</span> <span class="nav-text">OpenResty的lua_resty_redis返回为空的判断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis自带的lua脚本"><span class="nav-number">2.</span> <span class="nav-text">redis自带的lua脚本</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#redis的lua脚本拓展，返回nil及其判断"><span class="nav-number">1.</span> <span class="nav-text">redis的lua脚本拓展，返回nil及其判断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenResty的lua-resty-redis返回为空的判断"><span class="nav-number">1.1.</span> <span class="nav-text">OpenResty的lua_resty_redis返回为空的判断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis自带的lua脚本"><span class="nav-number">1.2.</span> <span class="nav-text">redis自带的lua脚本</span></a></li></ol></li></ol></div>
             
 
           </div>
